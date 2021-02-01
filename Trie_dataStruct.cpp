@@ -15,6 +15,15 @@ struct TrieData *getNode()
         newNode->child[i] = NULL;
     return newNode;
 } ;
+bool isEmpty(TrieData *lists)
+{
+    for(int i = 0; i < 26; i++)
+    {
+        if(lists->child[i])
+            return false;
+    }
+    return true;
+}
 void inserts(struct TrieData *root,string  &key)
 {
     TrieData *lists = root;
@@ -27,7 +36,7 @@ void inserts(struct TrieData *root,string  &key)
     }
     lists->isEnd = true;
 }
-bool searchs(struct TrieData *root,string &key)
+bool searchs(struct TrieData *root,string key)
 {
     TrieData *data = root;
     for(int i = 0; i < key.length(); i++)
@@ -41,19 +50,42 @@ bool searchs(struct TrieData *root,string &key)
     return data->isEnd;
 
 }
+TrieData *deleteKey(TrieData *lists, string key, int pos)
+{
+    if(lists==NULL)
+    {
+        return NULL;
+    }
+    if(pos==key.length())
+    {
+        lists->isEnd = NULL;
+        if(isEmpty(lists))
+        {
+            delete(lists);  lists = NULL;
+        }
+        return lists;
+    }
+    int index = key[pos]-'a';
+    lists->child[index] = deleteKey(lists->child[index],key, pos+1);
+        if(isEmpty(lists)&& lists->isEnd == false)
+        {
+            delete(lists); lists = NULL;
+        }
+        return lists;
+}
 int main()
 {
-    string s = "ravi";
+    string s[] = {"ravi", "doremon", "saurav", "saurabh"};
     struct TrieData *root = getNode();
-    inserts(root,s);
-    if(searchs(root,s))
+    for(int i = 0; i < sizeof(s)/sizeof(s[0]); i++)
     {
-        cout<<"YES\n";
+
+        inserts(root,s[i]);
+
     }
-    else
-    {
-        cout<<"No.\n";
-    }
+    searchs(root,"saurav")?cout<<"Found.\n":cout<<"Not Found.\n";
+    root = deleteKey(root, "saurav", 0);
+    searchs(root,"saurav")?cout<<"Found.\n":cout<<"Not Found.\n";
 
     return 0;
 }
